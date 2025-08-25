@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASS REPORTER - HACKER MODE</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #0f0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 255, 0, 0.03) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.03) 3px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #0f0;
+            border-radius: 0;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            width: calc(100% - 40px);
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+            min-height: calc(100vh - 40px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        h1 {
+            color: #0f0;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: clamp(1.5em, 5vw, 2.5em);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #0f0;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #0f0; }
+            to { text-shadow: 0 0 20px #0f0, 0 0 30px #0f0; }
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #0f0;
+            font-weight: 700;
+            font-size: clamp(0.8em, 2vw, 0.9em);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #0f0;
+            border-radius: 0;
+            font-size: clamp(14px, 3vw, 16px);
+            font-family: 'Orbitron', monospace;
+            background: rgba(0, 255, 0, 0.1);
+            color: #0f0;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #0f0;
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 
+                0 0 10px #0f0,
+                inset 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+
+        button {
+            background: transparent;
+            color: #0f0;
+            padding: 15px 30px;
+            border: 2px solid #0f0;
+            cursor: pointer;
+            width: 100%;
+            font-size: clamp(16px, 4vw, 18px);
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 
+                0 0 20px #0f0,
+                inset 0 0 20px rgba(0, 255, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #0f0;
+            display: none;
+            animation: slideIn 0.3s ease;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success {
+            color: #0f0;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .error {
+            color: #f00;
+            border-color: #f00;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+            pointer-events: none;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background: #0f0;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .access-granted {
+            display: none;
+            text-align: center;
+            color: #0f0;
+            font-size: 1.5em;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+
+        .two-factor-section {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .two-factor-section input {
+            max-width: 200px;
+            margin: 0 auto;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+                width: calc(100% - 20px);
+                min-height: calc(100vh - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    
+    <div class="container">
+        <h1><i class="fas fa-terminal"></i> MASS REPORTER <span class="terminal-cursor"></span></h1>
+        
+        <div class="login-section">
+            <div class="input-group">
+                <label for="username">USER_ID</label>
+                <input type="text" id="username" placeholder="root@instagram:~$">
+                <i class="fas fa-user icon"></i>
+            </div>
+            <div class="input-group">
+                <label for="password">PASS_KEY</label>
+                <input type="password" id="password" placeholder="********">
+                <i class="fas fa-key icon"></i>
+            </div>
+            <button onclick="handleLogin()">
+                <i class="fas fa-sign-in-alt"></i> INITIATE LOGIN
+            </button>
+            
+            <div class="two-factor-section" id="twoFactorSection">
+                <div class="input-group">
+                    <label for="twoFactorCode">2FA_CODE</label>
+                    <input type="text" id="twoFactorCode" placeholder="000000" maxlength="6">
+                    <i class="fas fa-shield-alt icon"></i>
+                </div>
+                <button onclick="handleTwoFactor()">
+                    <i class="fas fa-check-circle"></i> VERIFY CODE
+                </button>
+            </div>
+            
+            <div class="access-granted" id="accessGranted">
+                <i class="fas fa-check-circle"></i> ACCESS GRANTED
+            </div>
+        </div>
+
+        <div class="main-content hidden" id="mainContent">
+            <div class="input-group">
+                <label for="accounts">TARGET</label>
+                <input type="text" id="accounts" placeholder="@target_user">
+                <i class="fas fa-crosshairs icon"></i>
+            </div>
+
+            <div class="input-group">
+                <label for="reason">ATTACK_TYPE</label>
+                <select id="reason">
+                    <option value="spam">SPAM</option>
+                    <option value="fake_account">FAKE_ACCOUNT</option>
+                    <option value="impersonation">IMPERSONATION</option>
+                    <option value="scam">SCAM</option>
+                    <option value="inappropriate_content">CONTENT_VIOLATION</option>
+                    <option value="harassment">HARASSMENT</option>
+                    <option value="hate_speech">HATE_SPEECH</option>
+                    <option value="terrorism">TERRORISM</option>
+                    <option value="drug_use">DRUG_CONTENT</option>
+                    <option value="self_harm">SELF_HARM</option>
+                </select>
+                <i class="fas fa-bug icon"></i>
+            </div>
+
+            <div class="input-group hidden" id="impersonatedGroup">
+                <label for="impersonated">VICTIM_ID</label>
+                <input type="text" id="impersonated" placeholder="@victim_user">
+                <i class="fas fa-user-shield icon"></i>
+            </div>
+
+            <div class="input-group">
+                <label for="details">PAYLOAD</label>
+                <textarea id="details" rows="3" placeholder="Enter additional payload data..."></textarea>
+            </div>
+
+            <div class="report-count">
+                ATTACK VECTORS: <span id="reportCount">10</span>
+            </div>
+
+            <button onclick="submitReports()">
+                <i class="fas fa-rocket"></i> INITIATE ATTACK
+            </button>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        // Matrix rain effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        const matrixArray = matrix.split("");
+
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+
+        const drops = [];
+        for(let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        // Show/hide impersonated account input based on reason selection
+        document.getElementById('reason').addEventListener('change', function() {
+            const impersonatedGroup = document.getElementById('impersonatedGroup');
+            if (this.value === 'impersonation') {
+                impersonatedGroup.classList.remove('hidden');
+            } else {
+                impersonatedGroup.classList.add('hidden');
+            }
+        });
+
+        let sessionData = null;
+
+        async function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                showStatus('ERROR: INVALID CREDENTIALS', 'error');
+                return;
+            }
+
+            try {
+                showStatus('AUTHENTICATING...', 'success');
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.requiresTwoFactor) {
+                    document.getElementById('twoFactorSection').style.display = 'block';
+                    showStatus('2FA REQUIRED', 'success');
+                } else if (data.success) {
+                    sessionData = data.session;
+                    showAccessGranted();
+                } else {
+                    throw new Error(data.message || 'AUTHENTICATION FAILED');
+                }
+            } catch (error) {
+                showStatus(`ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        async function handleTwoFactor() {
+            const code = document.getElementById('twoFactorCode').value.trim();
+            
+            if (!code) {
+                showStatus('ERROR: INVALID 2FA CODE', 'error');
+                return;
+            }
+
+            try {
+                showStatus('VERIFYING 2FA...', 'success');
+                const response = await fetch('/verify-2fa', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        username: document.getElementById('username').value.trim(),
+                        code 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    sessionData = data.session;
+                    showAccessGranted();
+                } else {
+                    throw new Error(data.message || '2FA VERIFICATION FAILED');
+                }
+            } catch (error) {
+                showStatus(`ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        function showAccessGranted() {
+            document.getElementById('accessGranted').style.display = 'block';
+            document.getElementById('mainContent').classList.remove('hidden');
+            showStatus('SYSTEM READY', 'success');
+        }
+
+        async function submitReports() {
+            if (!sessionData) {
+                showStatus('ERROR: NOT AUTHENTICATED', 'error');
+                return;
+            }
+
+            const account = document.getElementById('accounts').value.trim();
+            const reason = document.getElementById('reason').value;
+            const impersonated = document.getElementById('impersonated').value.trim();
+            const details = document.getElementById('details').value.trim();
+            
+            if (!account) {
+                showStatus('ERROR: NO TARGET SPECIFIED', 'error');
+                return;
+            }
+
+            if (reason === 'impersonation' && !impersonated) {
+                showStatus('ERROR: VICTIM_ID REQUIRED FOR IMPERSONATION ATTACK', 'error');
+                return;
+            }
+
+            try {
+                showStatus('INITIATING ATTACK...', 'success');
+                
+                const response = await fetch('/submit-reports', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session: sessionData,
+                        target: account,
+                        reason,
+                        impersonated,
+                        details
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showStatus('MISSION ACCOMPLISHED - ALL ATTACKS DEPLOYED', 'success');
+                } else {
+                    throw new Error(data.message || 'ATTACK FAILED');
+                }
+            } catch (error) {
+                showStatus(`CRITICAL ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
